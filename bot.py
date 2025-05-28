@@ -267,6 +267,7 @@ def answer(message):
 @app.route('/', methods=['POST'])
 def webhook():
     json_data = request.get_json()
+    print("Лог:")
     print(json.dumps(json_data, indent=2, ensure_ascii=False))
     update = telebot.types.Update.de_json(json_data)
     bot.process_new_updates([update])
