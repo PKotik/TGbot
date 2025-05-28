@@ -9,6 +9,8 @@ class Status(Enum):
     REG = 1
     AUT = 2
     PRE = 3
+    DEL = 4
+    NAD = 5
 
 bot = telebot.TeleBot("7089479390:AAEHOQekHqFQe12gjEy5Emsb1Bo1FNZ_QXM")
 
@@ -45,6 +47,8 @@ class Chat:
         return self.__count_reqests
     def getstatus(self):
         return self.__status
+    def setstatus(self, status):
+        self.__status = status
 
     def registration(self, password):
         password = myhash(password)
@@ -102,12 +106,31 @@ class Admin(Chat):
         for chat in chats:
             output+=f"id: {chat.getid()} <> status: {isadminToStr(chat)} <> count requests: {chat.getcount_reqests()}\n"
         bot.send_message(self.getid(), output)
+    def wait_del_user(self):
+        self.setstatus(Status.DEL)
+        bot.send_message(self.__id, "Кого кокнуть? 🔫🔫")
     def del_user(self, id):
-        #print("Я удаляю его")
-        chats[:] = [chat for chat in chats if chat.getid() != id]
-    def make_this_admin(self):
-        self.__firstadmin = False
-        print("Я делаю его админом")
+        chat = next((b for b in chats if b.getid() == id), None)
+        if chat==None:
+            bot.send_message(id, "Его с нами нет ☁️☁️")
+            return
+        chats.remove(chat)
+        bot.send_message(id, "Опа. Кого-то хлопнули")
+        self.getstatus()=Status.NON
+    def wait_make_this_admin(self):
+        self.setstatus(Status.NAD)
+        bot.send_message(self.__id, "Кого сделать ШИШКОЙ? 🌰🌰")
+        return
+    def make_this_admin(self, id):
+        chat = next((b for b in chats if b.getid() == id), None)
+        if chat==None:
+            bot.send_message(id, "Его с нами нет ☁️☁️")
+            return
+        admin_obj = Admin.make_admin(chat)
+        index = chats.index(chat)
+        chats[index] = admin_obj
+        bot.send_message(message.chat.id, "Теперь он имеет право называться крутым.")
+        #print("Я делаю его админом")
     #admin = Admin.make_me_admin(chat)
     def ifirstadmin(self):
         return self.__firstadmin
@@ -188,6 +211,18 @@ def users(message):
         bot.send_message(message.chat.id, "Вы не админ 🤮")
         return
     chat.read_users()
+    
+@bot.message_handler(commands=['del'])
+def users(message):
+    chat = next((b for b in chats if b.getid() == message.chat.id), None)
+    if chat==None:
+        bot.send_message(message.chat.id, "Вы не существуете 😈")
+        return
+    if not(type(chat) is Admin):
+        bot.send_message(message.chat.id, "Вы не админ 🤮")
+        return
+    chat.read_users()
+    admin
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'photo'])
 def answer(message):
@@ -200,6 +235,9 @@ def answer(message):
         return
     elif chat.getstatus() == Status.AUT and message.content_type == 'text':
         chat.authorization(message.text)
+        return
+    elif chat.getstatus() == Status.DEL and message.content_type == 'text':
+        chat.del_user(message.text)
         return
     elif (chat.getstatus() == Status.REG or chat.getstatus() == Status.AUT) and message.content_type != 'text':
         bot.reply_to(message, "Аахпхапхапх, сын фермера 🤠🤠, пароль - это текст!")
