@@ -116,7 +116,7 @@ class Admin(Chat):
             return
         chats.remove(chat)
         bot.send_message(id, "Опа. Кого-то хлопнули")
-        self.getstatus()=Status.NON
+        self.setstatus(Status.NON)
     def wait_make_this_admin(self):
         self.setstatus(Status.NAD)
         bot.send_message(self.__id, "Кого сделать ШИШКОЙ? 🌰🌰")
@@ -129,7 +129,8 @@ class Admin(Chat):
         admin_obj = Admin.make_admin(chat)
         index = chats.index(chat)
         chats[index] = admin_obj
-        bot.send_message(message.chat.id, "Теперь он имеет право называться крутым.")
+        bot.send_message(id, "Теперь он имеет право называться крутым.")
+        self.setstatus(Status.NON)
         #print("Я делаю его админом")
     #admin = Admin.make_me_admin(chat)
     def ifirstadmin(self):
@@ -221,8 +222,20 @@ def users(message):
     if not(type(chat) is Admin):
         bot.send_message(message.chat.id, "Вы не админ 🤮")
         return
-    chat.read_users()
-    admin
+    admin.wait_del_user()
+    
+@bot.message_handler(commands=['newadmin'])
+def users(message):
+    chat = next((b for b in chats if b.getid() == message.chat.id), None)
+    if chat==None:
+        bot.send_message(message.chat.id, "Вы не существуете 😈")
+        return
+    if not(type(chat) is Admin):
+        bot.send_message(message.chat.id, "Вы не админ 🤮")
+        return
+    admin.wait_make_this_admin()
+
+    
 
 @bot.message_handler(func=lambda message: True, content_types=['text', 'photo'])
 def answer(message):
@@ -238,6 +251,9 @@ def answer(message):
         return
     elif chat.getstatus() == Status.DEL and message.content_type == 'text':
         chat.del_user(message.text)
+        return
+    elif chat.getstatus() == Status.NAD and message.content_type == 'text':
+        chat.make_this_admin(message.text)
         return
     elif (chat.getstatus() == Status.REG or chat.getstatus() == Status.AUT) and message.content_type != 'text':
         bot.reply_to(message, "Аахпхапхапх, сын фермера 🤠🤠, пароль - это текст!")
