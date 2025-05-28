@@ -213,8 +213,8 @@ def users(message):
         return
     chat.read_users()
     
-@bot.message_handler(commands=['del'])
-def users(message):
+@bot.message_handler(commands=['delete'])
+def delete(message):
     chat = next((b for b in chats if b.getid() == message.chat.id), None)
     if chat==None:
         bot.send_message(message.chat.id, "Вы не существуете 😈")
@@ -225,7 +225,7 @@ def users(message):
     chat.wait_del_user()
     
 @bot.message_handler(commands=['newadmin'])
-def users(message):
+def newadmin(message):
     chat = next((b for b in chats if b.getid() == message.chat.id), None)
     if chat==None:
         bot.send_message(message.chat.id, "Вы не существуете 😈")
