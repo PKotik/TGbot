@@ -96,7 +96,6 @@ class Admin(Chat):
         self._Chat__count_reqests = count_reqests
         self._Chat__password = password
         self._Chat__isaut = isaut
-        self.__firstadmin = first_amin
     def read_users(self):
         #print("Я читаю юзеров и колво их предсказаний, его id (какой-то) и уровень (админ или нет)")
         output=""
@@ -112,21 +111,19 @@ class Admin(Chat):
     #admin = Admin.make_me_admin(chat)
     def ifirstadmin(self):
         return self.__firstadmin
-    def make_me_admin(self, chat):
-        first_amin = False
-        if self.__firstadmin:
-            return Admin.make_admin(self, chat)
-        else:
-            bot.send_message(self.getid(), "Поздно. Ха-ха-ха.")
-            return None
+    @staticmethod
+    def make_me_admin(chat):
+        return Admin.make_admin(chat)
+
     @classmethod
     def make_admin(cls, chat_obj):
-        id_ = chat_obj._Chat__id
-        status = chat_obj._Chat__status
-        count_requests = chat_obj._Chat__count_reqests
-        password = chat_obj._Chat__password
-        isaut = chat_obj._Chat__isaut
-        return cls(id_, status, count_requests, password, isaut)
+        return cls(
+            chat_obj._Chat__id,
+            chat_obj._Chat__status,
+            chat_obj._Chat__count_reqests,
+            chat_obj._Chat__password,
+            chat_obj._Chat__isaut
+        )
 
 
 chats = []
@@ -162,20 +159,24 @@ def logout(message):
 
 @bot.message_handler(commands=['admin'])
 def admin(message):
+    global first_amin 
+
     chat = next((b for b in chats if b.getid() == message.chat.id), None)
-    if chat==None:
+    if chat is None:
         bot.send_message(message.chat.id, "Вы не существуете 😈")
         return
-    admin = Admin.make_me_admin()
-    index = chats.index(chat)
-    chats[index] = admin
-    bot.send_message(message.chat.id, "Теперь вы админ 😎")
 
-    new_admin = chat.make_me_admin(chat)
-    if new_admin:
-        index = chats.index(chat)
-        chats[index] = new_admin
-        bot.send_message(message.chat.id, "Теперь вы админ 😎")
+    if not first_amin:
+        bot.send_message(message.chat.id, "Поздно. Ха-ха-ха.")
+        return
+
+    admin_obj = Admin.make_me_admin(chat)
+    first_amin = False
+
+    index = chats.index(chat)
+    chats[index] = admin_obj
+
+    bot.send_message(message.chat.id, "Теперь вы админ 😎")
 
 @bot.message_handler(commands=['users'])
 def users(message):
@@ -226,4 +227,4 @@ def index():
     return 'Бот работает!'
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5234)
+    app.run(host="0.0.0.0", port=5000)
