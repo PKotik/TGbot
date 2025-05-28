@@ -1,6 +1,7 @@
 import telebot
 import bcrypt
 from flask import Flask, request
+import json
 
 from enum import Enum
 
@@ -93,7 +94,6 @@ class Chat:
 first_amin = True
 
 class Admin(Chat):
-
     def __init__(self, id_, status, count_reqests, password, isaut):
         self._Chat__id = id_
         self._Chat__status = status
@@ -101,7 +101,6 @@ class Admin(Chat):
         self._Chat__password = password
         self._Chat__isaut = isaut
     def read_users(self):
-        #print("Я читаю юзеров и колво их предсказаний, его id (какой-то) и уровень (админ или нет)")
         output=""
         for chat in chats:
             output+=f"id: {chat.getid()} <> status: {isadminToStr(chat)} <> count requests: {chat.getcount_reqests()}\n"
@@ -133,14 +132,9 @@ class Admin(Chat):
         chats[index] = admin_obj
         bot.send_message(self.getid(), "Теперь он имеет право называться крутым.")
         self.setstatus(Status.NON)
-        #print("Я делаю его админом")
-    #admin = Admin.make_me_admin(chat)
-    def ifirstadmin(self):
-        return self.__firstadmin
     @staticmethod
     def make_me_admin(chat):
         return Admin.make_admin(chat)
-
     @classmethod
     def make_admin(cls, chat_obj):
         return cls(
@@ -273,7 +267,7 @@ def answer(message):
 @app.route('/', methods=['POST'])
 def webhook():
     json_data = request.get_json()
-    print("Получено обновление:", json_data)
+    print(json.dumps(json_data, indent=2, ensure_ascii=False))
     update = telebot.types.Update.de_json(json_data)
     bot.process_new_updates([update])
     return 'ok'
