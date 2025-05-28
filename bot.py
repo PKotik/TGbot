@@ -86,9 +86,9 @@ class Chat:
         self.__count_reqests+=1
         self.__status=Status.NON
 
+first_amin = True
 
 class Admin(Chat):
-    _has_run = False
 
     def __init__(self, id_, status, count_reqests, password, isaut):
         self._Chat__id = id_
@@ -96,6 +96,7 @@ class Admin(Chat):
         self._Chat__count_reqests = count_reqests
         self._Chat__password = password
         self._Chat__isaut = isaut
+        self.__firstadmin = first_amin
     def read_users(self):
         #print("Я читаю юзеров и колво их предсказаний, его id (какой-то) и уровень (админ или нет)")
         output=""
@@ -112,9 +113,9 @@ class Admin(Chat):
     def ifirstadmin(self):
         return self.__firstadmin
     def make_me_admin(self, chat):
-        if not Admin._has_run:
-            Admin._has_run = True
-            return Admin.make_admin(chat)
+        first_amin = False
+        if self.__firstadmin:
+            return Admin.make_admin(self, chat)
         else:
             bot.send_message(self.getid(), "Поздно. Ха-ха-ха.")
             return None
@@ -162,13 +163,13 @@ def logout(message):
 @bot.message_handler(commands=['admin'])
 def admin(message):
     chat = next((b for b in chats if b.getid() == message.chat.id), None)
-    if chat is None:
+    if chat==None:
         bot.send_message(message.chat.id, "Вы не существуете 😈")
         return
-
-    if isinstance(chat, Admin):
-        bot.send_message(message.chat.id, "Вы уже админ 😌")
-        return
+    admin = Admin.make_me_admin()
+    index = chats.index(chat)
+    chats[index] = admin
+    bot.send_message(message.chat.id, "Теперь вы админ 😎")
 
     new_admin = chat.make_me_admin(chat)
     if new_admin:
