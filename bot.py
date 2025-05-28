@@ -14,6 +14,7 @@ bot = telebot.TeleBot("7801281997:AAGkH9cDcGezhF7Y62FpdjbgCS1nLsgdW20")
 
 app = Flask(__name__)
 
+
 def myhash(password):
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
@@ -224,4 +225,4 @@ def index():
     return 'Бот работает!'
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(host="0.0.0.0", port=5000)
