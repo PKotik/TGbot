@@ -110,7 +110,7 @@ class Admin(Chat):
         self.setstatus(Status.DEL)
         bot.send_message(self.getid(), "Кого кокнуть? 🔫🔫")
     def del_user(self, id):
-        chat = next((b for b in chats if b.getid() == id), None)
+        chat = next((b for b in chats if b.getid() == (int)(id)), None)
         if chat==None:
             bot.send_message(self.getid(), "Его с нами нет ☁️☁️")
             return
@@ -123,15 +123,15 @@ class Admin(Chat):
         bot.send_message(self.getid(), "Кого сделать ШИШКОЙ? 🌰🌰")
         return
     def make_this_admin(self, id):
-        chat = next((b for b in chats if b.getid() == id), None)
+        chat = next((b for b in chats if b.getid() == (int)(id)), None)
         if chat==None:
-            bot.send_message(id, "Его с нами нет ☁️☁️")
+            bot.send_message(self.getid(), "Его с нами нет ☁️☁️")
             return
         bot.send_message(int(id), "Вас повысили. Вы теперь ШИШКА 🌰🌰🌰🌰🌰")
         admin_obj = Admin.make_admin(chat)
         index = chats.index(chat)
         chats[index] = admin_obj
-        bot.send_message(id, "Теперь он имеет право называться крутым.")
+        bot.send_message(self.getid(), "Теперь он имеет право называться крутым.")
         self.setstatus(Status.NON)
         #print("Я делаю его админом")
     #admin = Admin.make_me_admin(chat)
