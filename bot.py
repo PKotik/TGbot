@@ -222,7 +222,7 @@ def users(message):
     if not(type(chat) is Admin):
         bot.send_message(message.chat.id, "Вы не админ 🤮")
         return
-    admin.wait_del_user()
+    chat.wait_del_user()
     
 @bot.message_handler(commands=['newadmin'])
 def users(message):
@@ -233,7 +233,7 @@ def users(message):
     if not(type(chat) is Admin):
         bot.send_message(message.chat.id, "Вы не админ 🤮")
         return
-    admin.wait_make_this_admin()
+    chat.wait_make_this_admin()
 
     
 
