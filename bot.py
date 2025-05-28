@@ -10,7 +10,7 @@ class Status(Enum):
     AUT = 2
     PRE = 3
 
-bot = telebot.TeleBot("7801281997:AAGkH9cDcGezhF7Y62FpdjbgCS1nLsgdW20")
+bot = telebot.TeleBot("7089479390:AAEHOQekHqFQe12gjEy5Emsb1Bo1FNZ_QXM")
 
 app = Flask(__name__)
 
