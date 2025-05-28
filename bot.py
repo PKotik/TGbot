@@ -108,24 +108,26 @@ class Admin(Chat):
         bot.send_message(self.getid(), output)
     def wait_del_user(self):
         self.setstatus(Status.DEL)
-        bot.send_message(self.__id, "Кого кокнуть? 🔫🔫")
+        bot.send_message(self.getid(), "Кого кокнуть? 🔫🔫")
     def del_user(self, id):
         chat = next((b for b in chats if b.getid() == id), None)
         if chat==None:
-            bot.send_message(id, "Его с нами нет ☁️☁️")
+            bot.send_message(self.getid(), "Его с нами нет ☁️☁️")
             return
+        bot.send_message(int(id), "Вас удалили. Пока.")
         chats.remove(chat)
-        bot.send_message(id, "Опа. Кого-то хлопнули")
+        bot.send_message(self.getid(), "Опа. Кого-то хлопнули")
         self.setstatus(Status.NON)
     def wait_make_this_admin(self):
         self.setstatus(Status.NAD)
-        bot.send_message(self.__id, "Кого сделать ШИШКОЙ? 🌰🌰")
+        bot.send_message(self.getid(), "Кого сделать ШИШКОЙ? 🌰🌰")
         return
     def make_this_admin(self, id):
         chat = next((b for b in chats if b.getid() == id), None)
         if chat==None:
             bot.send_message(id, "Его с нами нет ☁️☁️")
             return
+        bot.send_message(int(id), "Вас повысили. Вы теперь ШИШКА 🌰🌰🌰🌰🌰")
         admin_obj = Admin.make_admin(chat)
         index = chats.index(chat)
         chats[index] = admin_obj
